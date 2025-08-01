@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes App</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Add Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Add Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>My Notes</h1>
+        </header>
+        
+        <!-- Add Note Form -->
+        <div class="add-note">
+            <form action="{{ url_for('add_note') }}" method="POST">
+                <div class="form-group">
+                    <input type="text" name="title" placeholder="Note Title" required>
+                </div>
+                <div class="form-group">
+                    <textarea name="content" placeholder="Write your note here..." required></textarea>
+                </div>
+                <button type="submit" class="add-btn">
+                    <span class="material-icons">add</span>
+                    Add Note
+                </button>
+            </form>
+        </div>
+
+        <!-- Notes List -->
+        <div class="notes-list">
+            {% if notes %}
+                {% for note in notes %}
+                <div class="note">
+                    <div class="note-header">
+                        <h3>{{ note.title }}</h3>
+                        <div class="note-actions">
+                            <button class="toggle-btn" title="Toggle content">
+                                <span class="material-icons">expand_more</span>
+                            </button>
+                            <a href="{{ url_for('delete_note', index=loop.index0) }}" 
+                               class="delete-btn" 
+                               onclick="return confirm('Delete this note?');"
+                               title="Delete note">
+                                <span class="material-icons">delete</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="note-content" style="display: none;">
+                        {{ note.content | safe }}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-notes">
+                    <span class="material-icons">note_add</span>
+                    <p>No notes yet. Create your first note!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers to toggle buttons
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const header = this.closest('.note-header');
+                    const content = header.nextElementSibling;
+                    const icon = this.querySelector('.material-icons');
+                    
+                    if (content.style.display === 'none') {
+                        content.style.display = 'block';
+                        icon.textContent = 'expand_less';
+                    } else {
+                        content.style.display = 'none';
+                        icon.textContent = 'expand_more';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
